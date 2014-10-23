@@ -1,0 +1,3 @@
+[submodule "pac"]
+	path = pac
+	url = git@github.com:psychonull/pac.git
