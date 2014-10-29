@@ -25,7 +25,18 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
     size: { width: 500, height: 400 }
   });
 
-  var logoBig = new pac.Sprite({
+  var LogoPrefab = pac.Sprite.extend({
+    texture: 'logo',
+    update: function(dt){
+      this.position.x += 50 * dt;
+
+      if (this.position.x + this.size.width > 700){
+        this.position.x = 0;
+      }
+    }
+  });
+
+  var logoBig = new LogoPrefab({
     texture: 'logo',
     position: {
       x: 100,
@@ -34,10 +45,10 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
     size: {
       width: 405,
       height: 135
-    }
+    },
   });
 
-  var logoSmall = new pac.Sprite({
+  var logoSmall = new LogoPrefab({
     texture: 'logo',
     position: {
       x: 400,
