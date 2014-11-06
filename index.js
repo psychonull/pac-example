@@ -11,7 +11,7 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
     container: ctn,
     backgroundColor: '#000000',
     size: {
-      width: 700,
+      width: 800,
       height: 500
     },
     layers: [ 'back', 'front' ]
@@ -19,7 +19,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
   game.use('loader', pac.Loader, {
     'logo': 'assets/images/psychonull_logo_pac.png',
-    'kid': 'assets/images/kid_sprites.png'
+    'kid': 'assets/images/kid_sprites.png',
+    'bg_school': 'assets/images/school_front.png'
   });
 
   game.loader.on('complete', function(){
@@ -27,6 +28,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
   });
 
   game.loader.load();
+
+  window.game = game;
 
 })();
 
@@ -51,7 +54,8 @@ function createGame(game){
 
   var scene = new pac.Scene({
     name: 'cool-scene',
-    size: { width: 500, height: 400 }
+    size: { width: 800, height: 500 },
+    texture: 'bg_school'
   });
 
 
