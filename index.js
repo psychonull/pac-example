@@ -14,7 +14,7 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
       width: 700,
       height: 500
     },
-    layers: [ 'back', 'middle', 'front' ]
+    layers: [ 'back', 'front' ]
   });
 
   game.use('loader', pac.Loader, {
@@ -128,7 +128,7 @@ function createGame(game){
   });
 
   var aKid = new KidPrefab({
-    // layer default -> FRONT OF ALL
+    layer: 'front',
     actions: [ new MoveRight({ vel: 50, bounds: { min: 250, max: 500 } }) ],
     animations: kidAnimations,
     position: {
@@ -149,6 +149,7 @@ function createGame(game){
 
   var logoBig = new LogoPrefab({
     layer: 'back',
+//    zIndex: 0,
     position: {
       x: 100,
       y: 100
@@ -160,7 +161,8 @@ function createGame(game){
   });
 
   var logoSmall = new LogoPrefab({
-    layer: 'middle',
+    layer: 'back',
+    zIndex: 1,
     position: {
       x: 280,
       y: 190
@@ -172,7 +174,8 @@ function createGame(game){
   });
 
   var logoSmall2 = new LogoPrefab({
-    layer: 'front',
+    layer: 'back',
+    zIndex: 2,
     position: {
       x: 370,
       y: 230
