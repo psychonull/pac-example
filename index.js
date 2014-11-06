@@ -20,6 +20,7 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
   game.use('loader', pac.Loader, {
     'logo': 'assets/images/psychonull_logo_pac.png',
     'kid': 'assets/images/kid_sprites.png',
+    'kidNM': 'assets/images/kid_sprites.png',
     'bg_school': 'assets/images/school_front.png'
   });
 
@@ -39,16 +40,19 @@ function createGame(game){
   /* KID TEXTURE FRAMES */
 
   var kid = game.cache.images.get('kid');
+  var kidNM = game.cache.images.get('kidNM');
 
   var kidframes = [];
+  var kidNframes = {};
   var w = 70, h = 120;
 
   for (var i=0; i<10; i++){
     kidframes.push({ x: i*w , y: 0, width: w, height: h });
+    kidNframes["walk_" + i] = { x: i*w , y: 0, width: w, height: h };
   }
 
   kid.frames = new pac.List(kidframes);
-
+  kidNM.frames = new pac.MapList(kidNframes);
 
   /* SCENE */
 
@@ -127,6 +131,16 @@ function createGame(game){
     default: 'idle'
   }); 
 
+  var kidAnimationsNamed = new pac.AnimationList({
+    walk: new pac.Animation({ 
+      fps: 10, 
+      frames: ['walk_0','walk_1','walk_2','walk_3','walk_4'] 
+    })
+  }, {
+    default: 'walk',
+    autoplay: true
+  }); 
+
   var KidPrefab = pac.Sprite.extend({
     texture: 'kid'
   });
@@ -138,6 +152,33 @@ function createGame(game){
     position: {
       x: 250,
       y: 150
+    },
+    size: {
+      width: 70,
+      height: 120
+    },
+  });
+
+  var aKidFrame = new KidPrefab({
+    layer: 'front',
+    frame: 2,
+    position: {
+      x: 250,
+      y: 350
+    },
+    size: {
+      width: 70,
+      height: 120
+    },
+  });
+
+  var aKidNamedFrames = new pac.Sprite({
+    texture: 'kidNM',
+    layer: 'front',
+    animations: kidAnimationsNamed,
+    position: {
+      x: 350,
+      y: 350
     },
     size: {
       width: 70,
@@ -194,7 +235,9 @@ function createGame(game){
   scene.addObject(logoSmall);
   scene.addObject(aKid);
   scene.addObject(logoBig);
+  scene.addObject(aKidFrame);
   scene.addObject(logoSmall2);
+  scene.addObject(aKidNamedFrames);
 
   game.scenes.add(scene);
 
