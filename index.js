@@ -19,8 +19,14 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
   game.use('loader', pac.Loader, {
     'logo': 'assets/images/psychonull_logo_pac.png',
-    'kid': 'assets/images/kid_sprites.png',
-    'kidNM': 'assets/images/kid_sprites.png',
+    'kid': {
+      path: 'assets/images/kid_sprites.png',
+      frames: getKidFrames()
+    },
+    'kidNM': {
+      path: 'assets/images/kid_sprites.png',
+      atlas: 'assets/images/kid_sprites.json'
+    },
     'bg_school': 'assets/images/school_front.png'
   });
 
@@ -34,26 +40,18 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
 })();
 
-
-function createGame(game){
-
-  /* KID TEXTURE FRAMES */
-
-  var kid = game.cache.images.get('kid');
-  var kidNM = game.cache.images.get('kidNM');
-
+function getKidFrames(){
   var kidframes = [];
-  var kidNframes = {};
   var w = 70, h = 120;
 
   for (var i=0; i<10; i++){
     kidframes.push({ x: i*w , y: 0, width: w, height: h });
-    kidNframes["walk_" + i] = { x: i*w , y: 0, width: w, height: h };
   }
 
-  kid.frames = new pac.List(kidframes);
-  kidNM.frames = new pac.MapList(kidNframes);
+  return kidframes;
+}
 
+function createGame(game){
   /* SCENE */
 
   var scene = new pac.Scene({
@@ -63,7 +61,7 @@ function createGame(game){
   });
 
 
-  // ACTION: Horizontal movement of an object 
+  // ACTION: Horizontal movement of an object
   var MoveH = pac.Action.extend({
 
     vel: 50,
@@ -80,7 +78,7 @@ function createGame(game){
 
       obj.position.x += this.vel * dt * this.dir;
 
-      if (obj.position.x + obj.size.width > this.bounds.max || 
+      if (obj.position.x + obj.size.width > this.bounds.max ||
         obj.position.x <= this.bounds.min ) {
 
           this.isFinished = true;
@@ -98,16 +96,16 @@ function createGame(game){
     },
 
     onEnd: function(){
-      this.insertInFrontOfMe(new MoveLeft({ 
-        vel: this.vel, 
-        bounds: this.bounds 
+      this.insertInFrontOfMe(new MoveLeft({
+        vel: this.vel,
+        bounds: this.bounds
       }));
     }
   });
 
   var MoveLeft = MoveH.extend({
     dir: -1,
- 
+
     onStart: function(){
       var obj = this.actionList.owner;
 
@@ -116,9 +114,9 @@ function createGame(game){
     },
 
     onEnd: function(){
-      this.insertInFrontOfMe(new MoveRight({ 
-        vel: this.vel, 
-        bounds: this.bounds 
+      this.insertInFrontOfMe(new MoveRight({
+        vel: this.vel,
+        bounds: this.bounds
       }));
     }
   });
@@ -129,17 +127,17 @@ function createGame(game){
     walkright: new pac.Animation({ fps: 10, frames: [0,1,2,3,4] })
   }, {
     default: 'idle'
-  }); 
+  });
 
   var kidAnimationsNamed = new pac.AnimationList({
-    walk: new pac.Animation({ 
-      fps: 10, 
-      frames: ['walk_0','walk_1','walk_2','walk_3','walk_4'] 
+    walk: new pac.Animation({
+      fps: 10,
+      frames: ['walk_0','walk_1','walk_2','walk_3','walk_4']
     })
   }, {
     default: 'walk',
     autoplay: true
-  }); 
+  });
 
   var KidPrefab = pac.Sprite.extend({
     texture: 'kid'

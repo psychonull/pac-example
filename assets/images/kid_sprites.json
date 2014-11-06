@@ -1,0 +1,14 @@
+{ "frames":
+  {
+    "walk_0":{"x":0,"y":0,"width":70,"height":120},
+    "walk_1":{"x":70,"y":0,"width":70,"height":120},
+    "walk_2":{"x":140,"y":0,"width":70,"height":120},
+    "walk_3":{"x":210,"y":0,"width":70,"height":120},
+    "walk_4":{"x":280,"y":0,"width":70,"height":120},
+    "walk_5":{"x":350,"y":0,"width":70,"height":120},
+    "walk_6":{"x":420,"y":0,"width":70,"height":120},
+    "walk_7":{"x":490,"y":0,"width":70,"height":120},
+    "walk_8":{"x":560,"y":0,"width":70,"height":120},
+    "walk_9":{"x":630,"y":0,"width":70,"height":120}
+  }
+}
