@@ -229,6 +229,37 @@ function createGame(game){
     }
   });
 
+  var ChangeRandomTextFill = pac.Action.extend({
+
+    interval: 0.250,
+    _currentInterval: 0,
+
+    init: function(options){
+      this.interval = (options && options.interval) || this.interval;
+    },
+
+    update: function(dt) {
+      var obj = this.actionList.owner;
+      this._currentInterval += dt;
+      if(this._currentInterval >= this.interval){
+        obj.fill = '#'+Math.floor(Math.random()*16777215).toString(16);
+        obj.stroke = '#'+Math.floor(Math.random()*16777215).toString(16);
+        obj.strokeThickness = Math.floor(Math.random()*4);
+        obj.font = pac._.random(12,46).toString(10) + 'px ' +
+          pac._.sample(['Arial', 'Helvetica', 'Comic Sans']);
+        obj.position.x = pac._.random(0,150);
+        this._currentInterval = 0;
+      }
+    }
+
+  });
+
+  var title = new pac.Text('OP Example',{
+    actions: [ new ChangeRandomTextFill() ]
+  });
+
+
+
   // add objects in a weird order to proove the layer sorting
   scene.addObject(logoSmall);
   scene.addObject(aKid);
@@ -236,6 +267,7 @@ function createGame(game){
   scene.addObject(aKidFrame);
   scene.addObject(logoSmall2);
   scene.addObject(aKidNamedFrames);
+  scene.addObject(title);
 
   game.scenes.add(scene);
 
