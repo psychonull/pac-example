@@ -6,8 +6,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
   var game = pac.create();
 
-  //game.use('renderer', pac.NativeRenderer, {
-  game.use('renderer', pac.PixiRenderer, {
+  game.use('renderer', pac.NativeRenderer, {
+  //game.use('renderer', pac.PixiRenderer, {
     container: ctn,
     backgroundColor: '#000000',
     size: {
@@ -28,6 +28,10 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
       atlas: 'assets/images/kid_sprites.json'
     },
     'bg_school': 'assets/images/school_front.png'
+  });
+
+  game.use('input', pac.MouseInput, {
+    enabled: true
   });
 
   game.loader.on('complete', function(){
@@ -121,6 +125,39 @@ function createGame(game){
     }
   });
 
+  // ACTION: Follow Input
+  var FollowInput = pac.Action.extend({
+
+    vel: 50,
+
+    init: function(options){
+      this.vel = (options && options.vel) || this.vel;
+      this.target = null;
+      this.dir = null;
+    },
+
+    update: function(dt) {
+      var obj = this.actionList.owner;
+
+      //TODO: make a way to get the game from the action
+      if (game.inputs.cursor.isDown){
+        this.target = game.inputs.cursor.position;
+        this.dir = this.target.subtract(obj.position).normalize();
+      }
+
+      if (this.target){
+        var m = this.vel * dt;
+        var move = new pac.Point(m * this.dir.x, m * this.dir.y);
+        obj.position = obj.position.add(move);
+
+        if (this.target.subtract(obj.position).length() < 5){
+          this.target = null;
+        }
+      }
+    }
+
+  });
+
   var kidAnimations = new pac.AnimationList({
     idle: new pac.Animation({ frames: [0] }),
     walkleft: new pac.Animation({ fps: 20, frames: [5,6,7,8,9] }),
@@ -141,6 +178,20 @@ function createGame(game){
 
   var KidPrefab = pac.Sprite.extend({
     texture: 'kid'
+  });
+
+  var aKidMove = new KidPrefab({
+    layer: 'front',
+    frame: 2,
+    actions: [ new FollowInput({ vel: 50 }) ],
+    position: {
+      x: 300,
+      y: 200
+    },
+    size: {
+      width: 35,
+      height: 60
+    },
   });
 
   var aKid = new KidPrefab({
@@ -268,8 +319,14 @@ function createGame(game){
   scene.addObject(logoSmall2);
   scene.addObject(aKidNamedFrames);
   scene.addObject(title);
+  scene.addObject(aKidMove);
 
   game.scenes.add(scene);
 
   game.start();
+
+  game.on('update', function(){
+    var pos = game.inputs.cursor.position;
+    document.getElementById('pos').innerText = pos.x + ":" + pos.y;
+  });
 }
