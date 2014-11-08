@@ -40,8 +40,6 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
   game.loader.load();
 
-  window.game = game;
-
 })();
 
 function getKidFrames(){
@@ -78,7 +76,7 @@ function createGame(game){
     },
 
     update: function(dt) {
-      var obj = this.actionList.owner;
+      var obj = this.actions.owner;
 
       obj.position.x += this.vel * dt * this.dir;
 
@@ -94,12 +92,13 @@ function createGame(game){
   var MoveRight = MoveH.extend({
 
     onStart: function(){
-      var obj = this.actionList.owner;
+      var obj = this.actions.owner;
       if (obj.animations)
         obj.animations.play('walkright');
     },
 
     onEnd: function(){
+      this.insertInFrontOfMe(new pac.actions.Delay(2));
       this.insertInFrontOfMe(new MoveLeft({
         vel: this.vel,
         bounds: this.bounds
@@ -111,13 +110,14 @@ function createGame(game){
     dir: -1,
 
     onStart: function(){
-      var obj = this.actionList.owner;
+      var obj = this.actions.owner;
 
       if (obj.animations)
         obj.animations.play('walkleft');
     },
 
     onEnd: function(){
+      this.insertInFrontOfMe(new pac.actions.Delay(2));
       this.insertInFrontOfMe(new MoveRight({
         vel: this.vel,
         bounds: this.bounds
@@ -137,11 +137,11 @@ function createGame(game){
     },
 
     update: function(dt) {
-      var obj = this.actionList.owner;
+      var obj = this.actions.owner;
+      var cursor = obj.game.inputs.cursor;
 
-      //TODO: make a way to get the game from the action
-      if (game.inputs.cursor.isDown){
-        this.target = game.inputs.cursor.position;
+      if (cursor.isDown){
+        this.target = cursor.position;
         this.dir = this.target.subtract(obj.position).normalize();
       }
 
@@ -152,6 +152,7 @@ function createGame(game){
 
         if (this.target.subtract(obj.position).length() < 5){
           this.target = null;
+          this.isFinished = true;
         }
       }
     }
@@ -170,20 +171,55 @@ function createGame(game){
     walk: new pac.Animation({
       fps: 10,
       frames: ['walk_0','walk_1','walk_2','walk_3','walk_4']
+    }),
+    idle: new pac.Animation({
+      frames: ['walk_0']
     })
   }, {
     default: 'walk',
     autoplay: true
   });
 
-  var KidPrefab = pac.Sprite.extend({
-    texture: 'kid'
+  var kidAnimationsNamed2 = new pac.AnimationList({
+    walk: new pac.Animation({
+      fps: 10,
+      frames: ['walk_0','walk_1','walk_2','walk_3','walk_4']
+    }),
+    idle: new pac.Animation({
+      frames: ['walk_0']
+    })
+  }, {
+    default: 'idle',
+    autoplay: true
   });
 
-  var aKidMove = new KidPrefab({
+  var KidMover = pac.Sprite.extend({
+    texture: 'kidNM',
     layer: 'front',
-    frame: 2,
-    actions: [ new FollowInput({ vel: 50 }) ],
+    update: function(dt){
+      if (this.isHover) {
+
+        if (this.animations.current._name !== 'walk'){
+          //TODO: check on AnimationList if it's running a play of the same
+          // as the current --> DO NOT do a re-play
+          // it causes the animation to never change, since it is
+          // doing a play, stop, play, and so on.
+          this.animations.play('walk');
+        }
+
+        return;
+      }
+
+      if (this.animations.current._name !== 'idle'){
+        this.animations.play('idle');
+      }
+    }
+  });
+
+  var aKidMove = new KidMover({
+    frame: 'walk_0',
+    animations: kidAnimationsNamed2,
+    actions: [ new pac.actions.Hoverable(), new pac.actions.Clickable() ],
     position: {
       x: 300,
       y: 200
@@ -192,6 +228,15 @@ function createGame(game){
       width: 35,
       height: 60
     },
+  });
+
+  aKidMove.on('click', function(){
+    this.actions.pushFront(new FollowInput({ vel: 50 }));
+    this.actions.pushFront(new pac.actions.Delay(0.1));
+  });
+
+  var KidPrefab = pac.Sprite.extend({
+    texture: 'kid'
   });
 
   var aKid = new KidPrefab({
@@ -211,6 +256,7 @@ function createGame(game){
   var aKidFrame = new KidPrefab({
     layer: 'front',
     frame: 2,
+    actions: [ ],
     position: {
       x: 250,
       y: 350
@@ -290,7 +336,7 @@ function createGame(game){
     },
 
     update: function(dt) {
-      var obj = this.actionList.owner;
+      var obj = this.actions.owner;
       this._currentInterval += dt;
       if(this._currentInterval >= this.interval){
         obj.fill = '#'+Math.floor(Math.random()*16777215).toString(16);
