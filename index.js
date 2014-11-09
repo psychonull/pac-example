@@ -196,6 +196,7 @@ function createGame(game){
   var KidMover = pac.Sprite.extend({
     texture: 'kidNM',
     layer: 'front',
+    shape: true,
     update: function(dt){
       if (this.isHover) {
 
