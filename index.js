@@ -356,9 +356,38 @@ function createGame(game){
     actions: [ new ChangeRandomTextFill() ]
   });
 
+  // SHAPES
+  var circle = new pac.Circle({
+    layer: 'front',
+    position: {
+      x: 280,
+      y: 50
+    },
+    radius: 30,
+    fill: '#2add2a',
+    stroke: '#641cea',
+    lineWidth: 2
+  });
 
+  var rect = new pac.Rectangle({
+    layer: 'front',
+    position: {
+      x: 300,
+      y: 50
+    },
+    size: {
+      width: 100,
+      height: 50
+    },
+    fill: '#c138a3',
+    stroke: '#ff4f4f',
+    lineWidth: 2
+  });
 
   // add objects in a weird order to proove the layer sorting
+  scene.addObject(circle);
+  scene.addObject(rect);
+
   scene.addObject(logoSmall);
   scene.addObject(aKid);
   scene.addObject(logoBig);
