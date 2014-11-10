@@ -6,8 +6,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
   var game = pac.create();
 
-  //game.use('renderer', pac.NativeRenderer, {
-  game.use('renderer', pac.PixiRenderer, {
+  game.use('renderer', pac.NativeRenderer, {
+  //game.use('renderer', pac.PixiRenderer, {
     container: ctn,
     backgroundColor: '#000000',
     size: {
@@ -356,6 +356,17 @@ function createGame(game){
     actions: [ new ChangeRandomTextFill() ]
   });
 
+  var wrapText = new pac.Text('A long text so we can wrap it at 140px width, and bla, bla blah.',
+  {
+    wordWrap: 140,
+    fill: 'white',
+    font: '14px Arial',
+    position: {
+      x: 595,
+      y: 292
+    }
+  });
+
   // SHAPES
   var circle = new pac.Circle({
     layer: 'front',
@@ -395,6 +406,7 @@ function createGame(game){
   scene.addObject(logoSmall2);
   scene.addObject(aKidNamedFrames);
   scene.addObject(title);
+  scene.addObject(wrapText);
   scene.addObject(aKidMove);
 
   game.scenes.add(scene);
