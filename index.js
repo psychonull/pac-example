@@ -6,17 +6,6 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
   var game = pac.create();
 
-  game.use('renderer', pac.NativeRenderer, {
-  //game.use('renderer', pac.PixiRenderer, {
-    container: ctn,
-    backgroundColor: '#000000',
-    size: {
-      width: 800,
-      height: 500
-    },
-    layers: [ 'back', 'front' ]
-  });
-
   game.use('loader', pac.Loader, {
     'logo': 'assets/images/psychonull_logo_pac.png',
     'kid': {
@@ -27,8 +16,25 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
       path: 'assets/images/kid_sprites.png',
       atlas: 'assets/images/kid_sprites.json'
     },
-    'bg_school': 'assets/images/school_front.png'
+    'bg_school': 'assets/images/school_front.png',
+    'nokia-font': {
+      texture: 'assets/fonts/nokia.png',
+      definition: 'assets/fonts/nokia.json',
+      type: 'bitmapFont'
+    }
   });
+
+  //game.use('renderer', pac.NativeRenderer, {
+  game.use('renderer', pac.PixiRenderer, {
+    container: ctn,
+    backgroundColor: '#000000',
+    size: {
+      width: 800,
+      height: 500
+    },
+    layers: [ 'back', 'front' ]
+  });
+
 
   game.use('input', pac.MouseInput, {
     enabled: true
@@ -367,6 +373,15 @@ function createGame(game){
     }
   });
 
+  var bitmapText = new pac.Text('Bitmap font!!', {
+    font: '20px nokia-font',
+    position: {
+      x: 250,
+      y: 475
+    },
+    isBitmapText: true
+  });
+
   // SHAPES
   var circle = new pac.Circle({
     layer: 'front',
@@ -407,6 +422,7 @@ function createGame(game){
   scene.addObject(aKidNamedFrames);
   scene.addObject(title);
   scene.addObject(wrapText);
+  scene.addObject(bitmapText);
   scene.addObject(aKidMove);
 
   game.scenes.add(scene);
