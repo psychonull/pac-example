@@ -395,6 +395,17 @@ function createGame(game){
     lineWidth: 2
   });
 
+  //test for changing shapes
+  setTimeout(function(){
+    rect.fill = '#00ff00';
+    rect.size.width *= 2;
+    rect.position.x += 100;
+
+    circle.fill = '#ff0000';
+    circle.radius *= 1.5;
+    circle.position.x += 50;
+  }, 3000);
+
   // add objects in a weird order to proove the layer sorting
   scene.addObject(circle);
   scene.addObject(rect);
