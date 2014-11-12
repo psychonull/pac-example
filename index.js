@@ -410,6 +410,12 @@ function createGame(game){
     lineWidth: 2
   });
 
+  var polygon = new pac.Polygon([100,100 , 100,200, 200,200], {
+    fill: '#c138a3',
+    stroke: '#ff4f4f',
+    lineWidth: 2
+  });
+
   //test for changing shapes
   setTimeout(function(){
     rect.fill = '#00ff00';
@@ -419,11 +425,16 @@ function createGame(game){
     circle.fill = '#ff0000';
     circle.radius *= 1.5;
     circle.position.x += 50;
+
+    polygon.fill = '#0000ff';
+    polygon.points[0].y = 300;
   }, 3000);
+
 
   // add objects in a weird order to proove the layer sorting
   scene.addObject(circle);
   scene.addObject(rect);
+  scene.addObject(polygon);
 
   scene.addObject(logoSmall);
   scene.addObject(aKid);
