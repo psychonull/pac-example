@@ -205,15 +205,7 @@ function createGame(game){
     shape: true,
     update: function(dt){
       if (this.isHover) {
-
-        if (this.animations.current._name !== 'walk'){
-          //TODO: check on AnimationList if it's running a play of the same
-          // as the current --> DO NOT do a re-play
-          // it causes the animation to never change, since it is
-          // doing a play, stop, play, and so on.
-          this.animations.play('walk');
-        }
-
+        this.animations.play('walk');
         return;
       }
 

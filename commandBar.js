@@ -112,9 +112,8 @@ function createGame(game){
       return 'I\'m scared to touch that';
     },
     walkto: function(){
-      //TODO: how to get [this] here?
-      var kid = scene.findObject('Kid').at(0);
-      kid.actions.pushFront(new WalkTo(abstract.position));
+      var kid = this.scene.findObject('Kid');
+      kid.actions.pushFront(new WalkTo(this.position));
     }
   };
 
