@@ -12,6 +12,10 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
   game.use('loader', pac.Loader, {
     'MM': 'assets/images/MM.png',
     'abstract': 'assets/images/abstract.png',
+    'kidNM': {
+      path: 'assets/images/kid_sprites.png',
+      atlas: 'assets/images/kid_sprites.json'
+    },
     'nokia-font': {
       texture: 'assets/fonts/nokia.png',
       definition: 'assets/fonts/nokia.json',
@@ -44,6 +48,37 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
 })();
 
+// ACTION: Follow Input
+var WalkTo = pac.Action.extend({
+
+  vel: 50,
+
+  init: function(target){
+    this.target = target;
+  },
+
+  onStart: function(){
+    var obj = this.actions.owner;
+    this.dir = this.target.subtract(obj.position).normalize();
+  },
+
+  update: function(dt) {
+    var obj = this.actions.owner;
+
+    if (this.target){
+      var m = this.vel * dt;
+      var move = new pac.Point(m * this.dir.x, m * this.dir.y);
+      obj.position = obj.position.add(move);
+
+      if (this.target.subtract(obj.position).length() < 5){
+        this.target = null;
+        this.isFinished = true;
+      }
+    }
+  }
+
+});
+
 function createGame(game){
   /* SCENE */
 
@@ -54,8 +89,11 @@ function createGame(game){
   });
 
   var abstract = new pac.Sprite({
+    name: 'Weird Thing',
     texture: 'abstract',
     layer: 'background',
+    shape: true,
+    actions: [ new pac.actions.Hoverable(), new pac.actions.Clickable(), new pac.actions.Command() ],
     position: {
       x: 280,
       y: 100
@@ -66,6 +104,46 @@ function createGame(game){
     }
   });
 
+  abstract.onCommand = {
+    use: function(){
+      return 'I don\'t know how to use that';
+    },
+    pickup: function(){
+      return 'I\'m scared to touch that';
+    },
+    walkto: function(){
+      //TODO: how to get [this] here?
+      var kid = scene.findObject('Kid').at(0);
+      kid.actions.pushFront(new WalkTo(abstract.position));
+    }
+  };
+
+  var kid = new pac.Sprite({
+    name: 'Kid',
+    texture: 'kidNM',
+    layer: 'background',
+    frame: 'walk_0',
+    shape: true,
+    actions: [ new pac.actions.Hoverable(), new pac.actions.Clickable(), new pac.actions.Command() ],
+    position: {
+      x: 100,
+      y: 50
+    },
+    size: {
+      width: 35,
+      height: 60
+    },
+  });
+
+  kid.onCommand = {
+    use: function(){
+      return 'How would I Use a Kid?';
+    },
+    pickup: function(){
+      return 'That kid is to heavy to carry';
+    }
+  };
+
   var commBar = new pac.prefabs.CommandBar({
     layer: 'gui',
 
@@ -74,6 +152,14 @@ function createGame(game){
 
     fill: '#000000',
     stroke: '#666666',
+
+    cannotHolder: 'I certain cannot {{action}} that',
+
+    messageBox: {
+      position: new pac.Point(10, 5),
+      font: '10px Arial',
+      fill: '#ffffff'
+    },
 
     commands: {
       'use': 'Use',
@@ -85,7 +171,7 @@ function createGame(game){
       'open': 'Open',
       'close': 'Close',
 
-      'pickup': 'Pick To',
+      'pickup': 'Pick Up',
       'lookat': 'Look At',
       'walkto': 'Walk To',
     },
@@ -94,23 +180,24 @@ function createGame(game){
 
     style: {
 
+      position: new pac.Point(10, 15),
+      margin: { x: 5, y: 3 },
+      size: { width: 40, height: 10 },
+
       text: {
-        font: '12px Arial',
+        font: '10px Arial',
         fill: '#ffffff',
       },
 
       hover:{
-        font: '12px Arial',
+        font: '10px Arial',
         fill: '#ffff00',
       },
 
       active: {
-        font: '12px Arial',
+        font: '10px Arial',
         fill: '#00ff00',
       },
-
-      margin: { x: 5, y: 7 },
-      size: { width: 45, height: 10 },
 
       grid: [
         ['push', 'open',  'walkto'],
@@ -122,6 +209,7 @@ function createGame(game){
   });
 
   scene.addObject(abstract);
+  scene.addObject(kid);
   scene.addObject(commBar);
 
   game.scenes.add(scene);
