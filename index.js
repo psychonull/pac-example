@@ -2,6 +2,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
 (function(){
 
+  pac.DEBUG = true;
+
   var ctn = document.getElementById('content');
 
   var game = pac.create();
@@ -255,6 +257,7 @@ function createGame(game){
   var aKidFrame = new KidPrefab({
     layer: 'front',
     frame: 2,
+    shape: true,
     actions: [ ],
     position: {
       x: 250,
@@ -265,6 +268,8 @@ function createGame(game){
       height: 120
     },
   });
+
+  aKidFrame.active = false;
 
   var aKidNamedFrames = new pac.Sprite({
     texture: 'kidNM',

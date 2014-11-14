@@ -2,6 +2,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
 
 (function(){
 
+  pac.DEBUG = true;
+
   var ctn = document.getElementById('content');
 
   // get a scale so we occupy 100% height with the game
