@@ -26,8 +26,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
     }
   });
 
-  //game.use('renderer', pac.NativeRenderer, {
-  game.use('renderer', pac.PixiRenderer, {
+  game.use('renderer', pac.NativeRenderer, {
+  //game.use('renderer', pac.PixiRenderer, {
     container: ctn,
     backgroundColor: '#000000',
     size: {
@@ -219,6 +219,7 @@ function createGame(game){
 
   var aKidMove = new KidMover({
     frame: 'walk_0',
+    shape: new pac.Polygon([-30,-30, 35,0, 35,60, 0,60 ]),
     animations: kidAnimationsNamed2,
     actions: [ new pac.actions.Hoverable(), new pac.actions.Clickable() ],
     position: {
