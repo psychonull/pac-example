@@ -26,8 +26,8 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
     }
   });
 
-  game.use('renderer', pac.NativeRenderer, {
-  //game.use('renderer', pac.PixiRenderer, {
+  //game.use('renderer', pac.NativeRenderer, {
+  game.use('renderer', pac.PixiRenderer, {
     container: ctn,
     backgroundColor: '#000000',
     size: {
