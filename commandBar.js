@@ -95,7 +95,7 @@ function createGame(game){
     texture: 'abstract',
     layer: 'background',
     shape: true,
-    actions: [ new pac.actions.Hoverable(), new pac.actions.Clickable(), new pac.actions.Command() ],
+    actions: [ new pac.actions.Command() ],
     position: {
       x: 280,
       y: 100
@@ -125,7 +125,7 @@ function createGame(game){
     layer: 'background',
     frame: 'walk_0',
     shape: true,
-    actions: [ new pac.actions.Hoverable(), new pac.actions.Clickable(), new pac.actions.Command() ],
+    actions: [ new pac.actions.Command() ],
     position: {
       x: 100,
       y: 50
