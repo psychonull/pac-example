@@ -34,7 +34,7 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
       height: 200
     },
     scale: gameScale,
-    layers: ['background', 'gui']
+    layers: ['background', 'front', 'gui']
   });
 
   game.use('input', pac.MouseInput, {
@@ -49,7 +49,7 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
   game.loader.load();
 
 })();
-
+/*
 // ACTION: Follow Input
 var WalkTo = pac.Action.extend({
 
@@ -80,7 +80,7 @@ var WalkTo = pac.Action.extend({
   }
 
 });
-
+*/
 function createGame(game){
   /* SCENE */
 
@@ -93,12 +93,12 @@ function createGame(game){
   var abstract = new pac.Sprite({
     name: 'Weird Thing',
     texture: 'abstract',
-    layer: 'background',
+    layer: 'front',
     shape: true,
     actions: [ new pac.actions.Command() ],
     position: {
       x: 280,
-      y: 100
+      y: 20
     },
     size: {
       width: 32,
@@ -114,21 +114,80 @@ function createGame(game){
       return 'I\'m scared to touch that';
     },
     walkto: function(){
+      return 'Is too high, I can\'t reach it';
+    }
+    /*
+    walkto: function(){
       var kid = this.scene.findObject('Kid');
       kid.actions.pushFront(new WalkTo(this.position));
     }
+    */
   };
 
-  var kid = new pac.Sprite({
+  var kidAnimations = new pac.AnimationList({
+    walkRight: new pac.Animation({
+      fps: 10,
+      frames: ['walk_0','walk_1','walk_2','walk_3','walk_4']
+    }),
+    walkLeft: new pac.Animation({
+      fps: 10,
+      frames: ['walk_5','walk_6','walk_7','walk_8','walk_9']
+    }),
+    idleRight: new pac.Animation({
+      frames: ['walk_0']
+    }),
+    idleLeft: new pac.Animation({
+      frames: ['walk_9']
+    })
+  }, {
+    default: 'idleRight',
+    autoplay: true
+  });
+
+  var Kid = pac.Sprite.extend({
     name: 'Kid',
     texture: 'kidNM',
-    layer: 'background',
-    frame: 'walk_0',
+    layer: 'front',
+    animations: kidAnimations,
+
+    init: function(){
+      this.lastSide = 'Left';
+    },
+
+    update: function(dt){
+
+      if (this.walkingTo){
+        var dir = this.walkingTo;
+
+        if (dir.x >= 0){
+          this.animations.play('walkRight');
+          this.lastSide = 'Right';
+        }
+        else {
+          this.animations.play('walkLeft');
+          this.lastSide = 'Left';
+        }
+      }
+      else {
+        this.animations.play('idle' + this.lastSide);
+      }
+    }
+
+  });
+
+  var kid = new Kid({
     shape: true,
-    actions: [ new pac.actions.Command() ],
+    actions: [
+      new pac.actions.Command(),
+      new pac.actions.Walker({
+        velocity: 40,
+        // comment this line below to try out discover feet
+        feet: new pac.Point(17, 50)
+      })
+    ],
     position: {
-      x: 100,
-      y: 50
+      x: 150,
+      y: 70
     },
     size: {
       width: 35,
@@ -209,6 +268,18 @@ function createGame(game){
 
   });
 
+  var walkableArea = new pac.prefabs.WalkableArea({
+    layer: 'background',
+
+    position: new pac.Point(0, 120),
+    //shape: new pac.Rectangle({ size: { width: 320, height: 20 }})
+    shape: new pac.Polygon([ 30,20 , 80,0 , 320,0 , 320,20 ]),
+
+    // comment line below to use "any" command for walking
+    commands: [ 'walkto' ]
+  });
+
+  scene.addObject(walkableArea);
   scene.addObject(abstract);
   scene.addObject(kid);
   scene.addObject(commBar);
