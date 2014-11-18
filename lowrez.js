@@ -1,6 +1,6 @@
 window.document.title += ' [pac  v' + pac.VERSION + ']';
 
-(function(){
+window.onload = function(){
 
   var ctn = document.getElementById('content');
 
@@ -35,51 +35,66 @@ window.document.title += ' [pac  v' + pac.VERSION + ']';
     scale: gameScale
   });
 
+  game.use('scenes', {
+    'MM': new MMScene()
+  });
+
   game.loader.on('complete', function(){
-    createGame(game);
+    game.start('MM');
   });
-
-  game.loader.load();
-
-})();
-
-function createGame(game){
-  /* SCENE */
-
-  var scene = new pac.Scene({
-    name: 'MM',
-    size: { width: 320, height: 200 },
-    texture: 'MM'
-  });
-  var abstract = new pac.Sprite({
-    texture: 'abstract',
-    position: {
-      x: 280,
-      y: 100
-    },
-    size: {
-      width: 32,
-      height: 32
-    }
-  });
-
-  var bitmapText = new pac.Text('Ha ha ha!!!', {
-    font: '7px nokia-font',
-    position: {
-      x: 9,
-      y: 20
-    },
-    isBitmapText: true
-  });
-
-  scene.addObject(abstract);
-  scene.addObject(bitmapText);
-  game.scenes.add(scene);
-
-  game.start();
 
   game.on('update', function(){
     var pos = game.inputs.cursor.position;
     document.getElementById('pos').innerText = pos.x + ":" + pos.y;
   });
-}
+
+  game.loader.load();
+
+};
+
+var MMScene = pac.Scene.extend({
+
+  texture: 'MM',
+  size: { width: 320, height: 200 },
+
+  init: function(options){
+
+  },
+
+  onEnter: function(scene){
+
+    var abstract = new pac.Sprite({
+      texture: 'abstract',
+      position: {
+        x: 280,
+        y: 100
+      },
+      size: {
+        width: 32,
+        height: 32
+      }
+    });
+
+    var bitmapText = new pac.Text('Ha ha ha!!!', {
+      font: '7px nokia-font',
+      position: {
+        x: 9,
+        y: 20
+      },
+      isBitmapText: true
+    });
+
+    this.addObject(abstract);
+    this.addObject(bitmapText);
+  },
+
+  onExit: function(scene){
+
+  },
+
+  update: function(dt){
+
+  }
+
+
+});
