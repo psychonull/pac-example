@@ -83,13 +83,34 @@ var kidAnimations = new pac.AnimationList({
 });
 
 var Kid = pac.Sprite.extend({
-  name: 'Kid',
   texture: 'kidNM',
   layer: 'front',
+  shape: true,
+  actions: [
+    new pac.actions.Command()
+  ],
   animations: kidAnimations,
+  size: {
+    width: 35,
+    height: 60
+  },
 
   init: function(){
     this.lastSide = 'Left';
+
+    this.walkerAct = {
+      velocity: 40,
+      feet: new pac.Point(17, 50)
+    };
+
+    this.onCommand = {
+      use: function(){
+        return 'How would I Use a Kid?';
+      },
+      pickup: function(){
+        return 'That kid is to heavy to carry';
+      }
+    };
   },
 
   update: function(dt){
@@ -109,8 +130,61 @@ var Kid = pac.Sprite.extend({
     else {
       this.animations.play('idle' + this.lastSide);
     }
+  },
+
+  onEnterScene: function(){
+
+    this.actions
+      .removeAll(pac.actions.WalkTo)
+      .removeAll(pac.actions.Walker)
+      .add(new pac.actions.Walker(this.walkerAct));
+
+    switch (this.game.getScene().name){
+      case 'MM': this.position = new pac.Point(150, 70); break;
+      case 'psychScene': this.position = new pac.Point(30, 65); break;
+    }
   }
 
+});
+
+var Abstract = pac.Sprite.extend({
+  name: 'Weird Thing',
+  texture: 'abstract',
+  layer: 'front',
+  shape: true,
+  actions: [ new pac.actions.Command() ],
+  position: {
+    x: 280,
+    y: 20
+  },
+  size: {
+    width: 32,
+    height: 32
+  },
+
+  init: function(){
+
+    this.onCommand = {
+      use: function(){
+        return 'I don\'t know how to use that';
+      },
+      pickup: function(){
+        return 'I\'m scared to touch that';
+      },
+      walkto: function(){
+        return 'Is too high, I can\'t reach it';
+      },
+      lookat: function(){
+        if (this.game.getScene().name === 'MM'){
+          this.game.loadScene('psychScene');
+        }
+        else {
+          this.game.loadScene('MM');
+        }
+      }
+    };
+
+  }
 });
 
 function createGameObjects(){
@@ -179,191 +253,73 @@ function createGameObjects(){
 
   });
 
-  var kid = new Kid({
-    name: 'kid',
-    shape: true,
-    actions: [
-      new pac.actions.Command(),
-      new pac.actions.Walker({
-        velocity: 40,
-        // comment this line below to try out discover feet
-        feet: new pac.Point(17, 50)
-      })
-    ],
-    position: {
-      x: 150,
-      y: 70
-    },
-    size: {
-      width: 35,
-      height: 60
-    },
-  });
-
-  kid.onCommand = {
-    use: function(){
-      return 'How would I Use a Kid?';
-    },
-    pickup: function(){
-      return 'That kid is to heavy to carry';
-    }
-  };
-
-  // TODO: add to game.addObject() the auto assing of the game into the object.
-  kid.game = this;
-  commBar.game = this;
-
-  this.addObject(kid);
-  this.addObject(commBar);
+  this
+    .addObject(new Kid({}))
+    .addObject(commBar);
 }
 
-var MMScene = pac.Scene.extend({
+var WalkableScene = pac.Scene.extend({
+
+  init: function(){
+
+    this.walkableArea = new pac.prefabs.WalkableArea({
+      layer: 'background',
+      shape: this.walkableShape,
+      commands: [ 'walkto' ]
+    });
+
+  },
+
+  onEnter: function(){
+    this.addObject(this.walkableArea);
+  },
+
+  onExit: function(){
+    this.walkableArea.clearWalkers();
+  },
+
+});
+
+var MMScene = WalkableScene.extend({
 
   texture: 'MM',
   size: { width: 320, height: 200 },
 
-  init: function(options){
-
-  },
+  walkableShape: new pac.Polygon([ 30,140 , 80,120 , 320,120 , 320,140 ]),
 
   onEnter: function(scene){
+    MMScene.__super__.onEnter.apply(this, arguments);
 
-    var abstract = new pac.Sprite({
-      name: 'Weird Thing',
-      texture: 'abstract',
-      layer: 'front',
-      shape: true,
-      actions: [ new pac.actions.Command() ],
-      position: {
-        x: 280,
-        y: 20
-      },
-      size: {
-        width: 32,
-        height: 32
-      }
-    });
-
-    abstract.onCommand = {
-      use: function(){
-        return 'I don\'t know how to use that';
-      },
-      pickup: function(){
-        return 'I\'m scared to touch that';
-      },
-      walkto: function(){
-        return 'Is too high, I can\'t reach it';
-      },
-      lookat: function(){
-        //TODO: a better way to get current scene name
-        if (this.game.scenes.current.name === 'MM'){
-          this.game.loadScene('psychScene');
-        }
-        else {
-          this.game.loadScene('MM');
-        }
-      }
-    };
-
-    var walkableArea = new pac.prefabs.WalkableArea({
-      layer: 'background',
-
-      position: new pac.Point(0, 120),
-      //shape: new pac.Rectangle({ size: { width: 320, height: 20 }})
-      shape: new pac.Polygon([ 30,20 , 80,0 , 320,0 , 320,20 ]),
-
-      // comment line below to use "any" command for walking
-      commands: [ 'walkto' ]
-    });
-
-    this.addObject(abstract);
-    this.addObject(walkableArea);
-
-
-
-
-    // make a default command on the commandbar
-    // it should be set everytime the scene changes
-    var cmdBar = this.game.findOne('CommandBar');
-    var use = cmdBar.children.findOne({ command: 'use'})
-    cmdBar.onCommandClick(use);
-
-
-    var kid = this.game.findOne('kid');
-    kid.position = new pac.Point(150, 70);
-
-    // how to make this automagically?
-    kid.actions.removeAll(pac.actions.Walker);
-
-    kid.actions.add(new pac.actions.Walker({
-      velocity: 40,
-      feet: new pac.Point(17, 50)
-    }));
+    this.addObject(new Abstract({}));
   },
 
   onExit: function(scene){
-
+    MMScene.__super__.onExit.apply(this, arguments);
   },
 
   update: function(dt){
 
   }
-
-
 });
 
-var PsychoScene = pac.Scene.extend({
+var PsychoScene = WalkableScene.extend({
 
   texture: 'bg_school',
   size: { width: 320, height: 200 },
 
-  init: function(options){
-
-  },
+  walkableShape: new pac.Polygon([ 0,140 , 0,60 , 320,60 , 320,140 ]),
 
   onEnter: function(scene){
+    PsychoScene.__super__.onEnter.apply(this, arguments);
+
     this.addObject(scene.findOne('Weird Thing'));
-
-    // make a default command on the commandbar
-    // it should be set everytime the scene changes
-    var cmdBar = this.game.findOne('CommandBar');
-    var use = cmdBar.children.findOne({ command: 'use'})
-    cmdBar.onCommandClick(use);
-
-    // walkable area should be set into each Scene, there is no
-    // real advantage of adding it everytime the scene is loaded
-    var walkableArea = new pac.prefabs.WalkableArea({
-      layer: 'background',
-
-      position: new pac.Point(0, 0),
-      //shape: new pac.Rectangle({ size: { width: 320, height: 20 }})
-      shape: new pac.Polygon([ 0,140 , 0,60 , 320,60 , 320,140 ]),
-
-      // comment line below to use "any" command for walking
-      commands: [ 'walkto' ]
-    });
-
-    this.addObject(walkableArea);
-
-    var kid = this.game.findOne('kid');
-    kid.position = new pac.Point(30, 65);
-
-    // how to make this automagically?
-    kid.actions.removeAll(pac.actions.Walker);
-
-    kid.actions.add(new pac.actions.Walker({
-      velocity: 40,
-      feet: new pac.Point(17, 50)
-    }));
   },
 
   onExit: function(scene){
-
+    PsychoScene.__super__.onExit.apply(this, arguments);
   },
 
   update: function(dt){
 
   }
-
-
 });
