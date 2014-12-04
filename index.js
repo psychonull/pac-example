@@ -439,6 +439,47 @@ var EpicScene = pac.Scene.extend({
     }, 3000);
 
 
+    var scene = this;
+
+    //test for late add objects
+    setTimeout(function(){
+      var lateCircle = new pac.Circle({
+        layer: 'front',
+        zIndex: 5,
+        position: {
+          x: 650,
+          y: 400
+        },
+        radius: 30,
+        fill: '#c138a3',
+        stroke: '#641cea',
+        lineWidth: 5
+      });
+
+      var lateLogo = new LogoPrefab({
+        layer: 'front',
+        zIndex: 10,
+        position: {
+          x: 500,
+          y: 350
+        },
+        size: {
+          width: 202,
+          height: 67
+        }
+      });
+
+      scene.addObject(lateLogo);
+      scene.addObject(lateCircle);
+
+      //test for late remove objects
+      setTimeout(function(){
+        scene.removeObject(lateCircle);
+        scene.removeObject(lateLogo);
+      }, 3000);
+
+    }, 3000);
+
     this.addObject(circle);
     this.addObject(rect);
     this.addObject(polygon);

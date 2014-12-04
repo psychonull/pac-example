@@ -87,7 +87,7 @@ var Kid = pac.Sprite.extend({
   layer: 'front',
   shape: true,
   actions: [
-    new pac.actions.Command()
+    new pac.actions.Commander()
   ],
   animations: kidAnimations,
   size: {
@@ -152,7 +152,7 @@ var Abstract = pac.Sprite.extend({
   texture: 'abstract',
   layer: 'front',
   shape: true,
-  actions: [ new pac.actions.Command() ],
+  actions: [ new pac.actions.Commander() ],
   position: {
     x: 280,
     y: 20
