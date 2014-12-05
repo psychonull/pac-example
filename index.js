@@ -474,7 +474,7 @@ var EpicScene = pac.Scene.extend({
 
       //test for change zIndex
       setTimeout(function(){
-        lateCircle.setZIndex(20);
+        lateCircle.zIndex = 20;
 
         //test for late remove objects
         setTimeout(function(){
